@@ -1,8 +1,9 @@
 import nvidia.dali.ops as ops
 import nvidia.dali.types as types
-from RandAugment import RandAugment
 from nvidia.dali.pipeline import Pipeline
 from torchvision.datasets import ImageFolder
+
+from models.RandAugment import RandAugment
 
 rander = RandAugment( 5, 5 )
 
@@ -60,7 +61,7 @@ class SimCLRTransform( Pipeline ):
         jpegs = self.decode( jpegs )
         
         if self.stage == 'train':
-            self.transform = self.train_transform
+            self.transform = self.train_rand_transform  # Todo: concern
         else:
             self.transform = self.val_transform
 
