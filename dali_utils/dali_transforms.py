@@ -1,17 +1,19 @@
-
 import nvidia.dali.ops as ops
 import nvidia.dali.types as types
+from RandAugment import RandAugment
 from nvidia.dali.pipeline import Pipeline
 from torchvision.datasets import ImageFolder
 
-class SimCLRTransform(Pipeline):
-    def __init__(self, DATA_PATH, input_height, batch_size, copies, stage, num_threads, device_id, seed = 1729):
-        super(SimCLRTransform, self).__init__(batch_size, num_threads, device_id, seed = seed)
-        
-        #this lets our pytorch compat function find the length of our dataset
-        self.num_samples = len(ImageFolder(DATA_PATH))
-        
-        
+rander = RandAugment( 5, 5 )
+
+
+class SimCLRTransform( Pipeline ):
+    def __init__(self, DATA_PATH, input_height, batch_size, copies, stage, num_threads, device_id, seed=1729):
+        super( SimCLRTransform, self ).__init__( batch_size, num_threads, device_id, seed=seed )
+
+        # this lets our pytorch compat function find the length of our dataset
+        self.num_samples = len( ImageFolder( DATA_PATH ) )
+
         self.copies = copies
         self.input_height = input_height
         self.stage = stage
@@ -29,25 +31,33 @@ class SimCLRTransform(Pipeline):
         self.flip = ops.Flip(vertical = self.coin(), horizontal = self.coin(), device = "gpu")
         self.colorjit_gray = ops.ColorTwist(brightness = self.uniform(), contrast = self.uniform(), hue = self.uniform(), saturation = self.uniform(), device = "gpu")
         self.blur = ops.GaussianBlur(window_size = self.to_int32_cpu(self.blur_amt()), device = "gpu", dtype = types.FLOAT)
-        self.swapaxes = ops.Transpose(perm = [2,0,1], device = "gpu") 
+        self.swapaxes = ops.Transpose(perm = [2,0,1], device = "gpu")
+
+        # Todo: Is this the place where we have to replace with RandAug ?
 
     def train_transform(self, image):
-        
-        image = self.crop(image)
-        image = self.flip(image)
-        image = self.colorjit_gray(image)
-        image = self.blur(image)
-        image = self.swapaxes(image)
+        breakpoint()
+        image = self.crop( image )
+        image = self.flip( image )
+        image = self.colorjit_gray( image )
+        image = self.blur( image )
+        image = self.swapaxes( image )
         return image
-    
+
+    def train_rand_transform(self, image):
+        breakpoint()
+        image = rander( image )
+        breakpoint()
+        return image
+
     def val_transform(self, image):
-        image = self.crop(image)
-        image = self.swapaxes(image)
+        image = self.crop( image )
+        image = self.swapaxes( image )
         return image
 
     def define_graph(self):
         jpegs, label = self.input()
-        jpegs = self.decode(jpegs)
+        jpegs = self.decode( jpegs )
         
         if self.stage == 'train':
             self.transform = self.train_transform
