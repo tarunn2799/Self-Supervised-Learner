@@ -1,31 +1,24 @@
-import os
-from termcolor import colored
-import numpy as np
-import math
 from argparse import ArgumentParser
-from termcolor import colored
 from enum import Enum
 
-import torch
-from torch.nn import functional as F
-from torch import nn
-from torchvision.datasets import ImageFolder
-from torch.optim import SGD
-
 import pytorch_lightning as pl
-from pl_bolts.models.self_supervised.ssl_finetuner import SSLFineTuner
+import torch
 from pl_bolts.models.self_supervised.evaluator import SSLEvaluator
 from pytorch_lightning.metrics import Accuracy
+from torch.nn import functional as F
+from torch.optim import SGD
 
-#Internal Imports
-from dali_utils.dali_transforms import SimCLRTransform #same transform as SimCLR, but only 1 copy
+# Internal Imports
+from dali_utils.dali_transforms import SimCLRTransform  # same transform as SimCLR, but only 1 copy
 from dali_utils.lightning_compat import ClassifierWrapper
 
-class CLASSIFIER(pl.LightningModule): #SSLFineTuner
 
-    def __init__(self, encoder, DATA_PATH, VAL_PATH, hidden_dim, image_size, seed, cpus, transform = SimCLRTransform, **classifier_hparams):
+class CLASSIFIER( pl.LightningModule ):  # SSLFineTuner
+
+    def __init__(self, encoder, DATA_PATH, VAL_PATH, hidden_dim, image_size, seed, cpus, transform=SimCLRTransform,
+                 **classifier_hparams):
         super().__init__()
-        
+
         self.DATA_PATH = DATA_PATH
         self.VAL_PATH = VAL_PATH
         self.transform = transform

@@ -1,6 +1,5 @@
-from torch.nn import functional as F
 from torch import nn
-from pl_bolts.models.self_supervised.resnets import resnet18, resnet50
+from torch.nn import functional as F
 
 
 class miniCNN(nn.Module):

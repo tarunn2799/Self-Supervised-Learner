@@ -1,17 +1,15 @@
-from termcolor import colored
 import torch
-
-#internal imports
-from .models import *
+from termcolor import colored
 
 
+# internal imports
 
 
 def load_model(args):
-    #load checkpoint models
+    # load checkpoint models
     if '.ckpt' in encoder_name:
         if technique.lower() == 'simclr':
-            model = SIMCLR.load_from_checkpoint(encoder_name, **args.__dict__)
+            model = SIMCLR.load_from_checkpoint( encoder_name, **args.__dict__ )
         elif technique.lower() == 'simsiam:
             model = SIMSIAM.load_from_checkpoint(encoder_name, **args.__dict__)
         elif technique.lower() == 'classifier':

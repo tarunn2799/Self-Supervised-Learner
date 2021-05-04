@@ -1,23 +1,14 @@
-import os
-from termcolor import colored
-import numpy as np
-import math
 from argparse import ArgumentParser
-from termcolor import colored
-from enum import Enum  
+from enum import Enum
 
-import torch
-from torch.nn import functional as F
-from torch import nn
-from torchvision.datasets import ImageFolder
-
-import pytorch_lightning as pl
 from pl_bolts.models.self_supervised import SimCLR
 from pl_bolts.models.self_supervised.simclr.simclr_module import Projection
+from torchvision.datasets import ImageFolder
 
-#Internal Imports
+# Internal Imports
 from dali_utils.dali_transforms import SimCLRTransform
 from dali_utils.lightning_compat import SimCLRWrapper
+
 
 class SIMCLR(SimCLR):
 
@@ -53,6 +44,7 @@ class SIMCLR(SimCLR):
     def setup(self, stage = 'inference'):
         Options = Enum('Loader', 'fit test inference')
         if stage == Options.fit.name:
+            breakpoint()
             train = self.transform(self.DATA_PATH, batch_size = self.batch_size, input_height = self.image_size, copies = 3, stage = 'train', num_threads = self.cpus, device_id = self.local_rank, seed = self.seed)
             val = self.transform(self.VAL_PATH, batch_size = self.batch_size, input_height = self.image_size, copies = 3, stage = 'validation', num_threads = self.cpus, device_id = self.local_rank, seed = self.seed)
             self.train_loader = SimCLRWrapper(transform = train)

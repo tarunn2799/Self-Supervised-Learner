@@ -1,28 +1,21 @@
-
 import os
-import math
-import numpy as np
 import shutil
-from pathlib import Path
-import splitfolders
-from termcolor import colored
+from argparse import ArgumentParser
 from enum import Enum
-import copy
-
-import torch
-from torchvision.datasets import ImageFolder
+from pathlib import Path
 
 import pytorch_lightning as pl
+import splitfolders
+import torch
 from pytorch_lightning.callbacks.early_stopping import EarlyStopping
-from pl_bolts.callbacks.ssl_online import SSLOnlineEvaluator
 from pytorch_lightning.loggers import WandbLogger
+from termcolor import colored
+from torchvision.datasets import ImageFolder
 
-from argparse import ArgumentParser
-
-#Internal Package Imports
+# Internal Package Imports
 from models import SIMCLR, SIMSIAM, CLASSIFIER, encoders
 
-#Dictionary of supported Techniques
+# Dictionary of supported Techniques
 supported_techniques = {
     'SIMCLR': SIMCLR.SIMCLR,
     'SIMSIAM': SIMSIAM.SIMSIAM,
