@@ -53,7 +53,7 @@ class SimCLRTransform( Pipeline ):
             ops.GaussianBlur( window_size=self.to_int32_cpu( self.blur_amt() ), device="gpu", dtype=types.FLOAT ),
             ops.Transpose( perm=[2, 0, 1], device="gpu" ),
             ops.BrightnessContrast( brightness=self.uniform(),
-                                    contrast=self.uniform(), contrast_center=self.uniform() ),
+                                    contrast=self.uniform() ),  # removed constrast_centre param
             ops.Water( ampl_x=self.uniform, ampl_y=self.uniform, fill_value=self.uniform,
                        freq_X=self.uniform(), freq_y=self.uniform() ),
             ops.transforms.Shear( angles=[self.uniform(), self.uniform()] ),
