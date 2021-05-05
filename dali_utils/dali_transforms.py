@@ -52,13 +52,13 @@ class SimCLRTransform( Pipeline ):
                             saturation=self.uniform(), device="gpu" ),
             ops.GaussianBlur( window_size=self.to_int32_cpu( self.blur_amt() ), device="gpu", dtype=types.FLOAT ),
             ops.Transpose( perm=[2, 0, 1], device="gpu" ),
-            ops.brightness_contrast( brightness=self.uniform(),
-                                     contrast=self.uniform(), contrast_center=self.uniform() ),
-            ops.water( ampl_x=self.uniform, ampl_y=self.uniform, fill_value=self.uniform,
+            ops.BrightnessContrast( brightness=self.uniform(),
+                                    contrast=self.uniform(), contrast_center=self.uniform() ),
+            ops.Water( ampl_x=self.uniform, ampl_y=self.uniform, fill_value=self.uniform,
                        freq_X=self.uniform(), freq_y=self.uniform() ),
-            ops.transforms.shear( angles=[self.uniform(), self.uniform()] ),
-            ops.hue( hue=self.uniform() ),
-            ops.hsv( hue=self.uniform(), saturation=self.uniform(), value=self.uniform() )
+            ops.transforms.Shear( angles=[self.uniform(), self.uniform()] ),
+            ops.Hue( hue=self.uniform() ),
+            ops.Hsv( hue=self.uniform(), saturation=self.uniform(), value=self.uniform() )
         ]
 
         # Todo: Increase the list of dali ops
@@ -74,7 +74,6 @@ class SimCLRTransform( Pipeline ):
         return img
 
     def train_transform(self, image):
-        # breakpoint()
         image = self.crop( image )
         image = self.flip( image )
         image = self.colorjit_gray( image )

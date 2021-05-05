@@ -44,7 +44,6 @@ class SIMCLR( SimCLR ):
     def setup(self, stage='inference'):
         Options = Enum( 'Loader', 'fit test inference' )
         if stage == Options.fit.name:
-            breakpoint()
             train = self.transform( self.DATA_PATH, batch_size=self.batch_size, input_height=self.image_size, copies=3,
                                     stage='train', num_threads=self.cpus, device_id=self.local_rank, seed=self.seed )
             val = self.transform( self.VAL_PATH, batch_size=self.batch_size, input_height=self.image_size, copies=3,
