@@ -54,11 +54,11 @@ class SimCLRTransform( Pipeline ):
             ops.Transpose( perm=[2, 0, 1], device="gpu" ),
             ops.BrightnessContrast( brightness=self.uniform(),
                                     contrast=self.uniform() ),  # removed constrast_centre param
-            ops.Water( ampl_x=self.uniform, ampl_y=self.uniform, fill_value=self.uniform ),
-            # freq_X=self.uniform(), freq_y=self.uniform()
-            ops.transforms.Shear( angles=[self.uniform(), self.uniform()] ),
-            ops.Hue( hue=self.uniform() ),
-            ops.Hsv( hue=self.uniform(), saturation=self.uniform(), value=self.uniform() )
+            # ops.Water( ampl_x=self.uniform, ampl_y=self.uniform, fill_value=self.uniform ),
+            # # freq_X=self.uniform(), freq_y=self.uniform()
+            # ops.transforms.Shear( angles=[self.uniform(), self.uniform()] ),
+            # ops.Hue( hue=self.uniform() ),
+            # ops.Hsv( hue=self.uniform(), saturation=self.uniform(), value=self.uniform() )
         ]
 
         # Todo: Increase the list of dali ops
