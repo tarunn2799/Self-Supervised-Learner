@@ -39,8 +39,15 @@ class SimCLRTransform( Pipeline ):
                                              saturation=self.uniform(), device="gpu" )
         self.blur = ops.GaussianBlur( window_size=self.to_int32_cpu( self.blur_amt() ), device="gpu",
                                       dtype=types.FLOAT )
-        self.swapaxes = ops.Transpose( perm=[2, 0, 1], device="gpu" )
 
+        self.swapaxes = ops.Transpose( perm=[2, 0, 1], device="gpu" )
+        self.brightness_contrast=ops.brightness_contrast(brightness=self.uniform(),
+                                                         contrast=self.uniform(),contrast_center=self.uniform())
+        self.hue=ops.hue(hue=self.uniform())
+        self.hsv=ops.hsv(hue=self.uniform(),saturation=self.uniform(),value=self.uniform())
+        self.water=ops.water(ampl_x=self.uniform,ampl_y=self.uniform,fill_value=self.uniform,
+                             freq_X=self.uniform(),freq_y=self.uniform())
+        self.transforms_shear=ops.transforms.shear(angles=[self.uniform(),self.uniform()])
         self.augment_list = [
             (ops.RandomResizedCrop( size=self.input_height, minibatch_size=batch_size, device="gpu",
                                     dtype=types.FLOAT ),),
@@ -48,7 +55,14 @@ class SimCLRTransform( Pipeline ):
             (ops.ColorTwist( brightness=self.uniform(), contrast=self.uniform(), hue=self.uniform(),
                              saturation=self.uniform(), device="gpu" ),),
             (ops.GaussianBlur( window_size=self.to_int32_cpu( self.blur_amt() ), device="gpu", dtype=types.FLOAT )),
-            (ops.Transpose( perm=[2, 0, 1], device="gpu" ))
+            (ops.Transpose( perm=[2, 0, 1], device="gpu" )),
+            (ops.brightness_contrast(brightness=self.uniform(),
+                                                         contrast=self.uniform(),contrast_center=self.uniform())),
+            (ops.water(ampl_x=self.uniform,ampl_y=self.uniform,fill_value=self.uniform,
+                             freq_X=self.uniform(),freq_y=self.uniform())),
+            (ops.transforms.shear(angles=[self.uniform(),self.uniform()]))
+
+
         ]
 
         # Todo: Increase the list of dali ops
