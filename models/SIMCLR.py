@@ -1,13 +1,15 @@
 from argparse import ArgumentParser
 from enum import Enum
 
+import numpy as np
 from pl_bolts.models.self_supervised import SimCLR
 from pl_bolts.models.self_supervised.simclr.simclr_module import Projection
+from torch.utils.data import DataLoader, SubsetRandomSampler
 from torchvision.datasets import ImageFolder
 
 # Internal Imports
 from dali_utils.dali_transforms import SimCLRTransform
-from dali_utils.lightning_compat import SimCLRWrapper
+from models.CustomDataSetter import SIMCLRData
 
 
 class SIMCLR( SimCLR ):
@@ -41,21 +43,43 @@ class SIMCLR( SimCLR ):
     def init_model(self):
         return None
 
+    # def setup(self, stage='inference'):
+    #     Options = Enum( 'Loader', 'fit test inference' )
+    #     if stage == Options.fit.name:
+    #         train = self.transform( self.DATA_PATH, batch_size=self.batch_size, input_height=self.image_size, copies=3,
+    #                                 stage='train', num_threads=self.cpus, device_id=self.local_rank, seed=self.seed )
+    #         val = self.transform( self.VAL_PATH, batch_size=self.batch_size, input_height=self.image_size, copies=3,
+    #                               stage='validation', num_threads=self.cpus, device_id=self.local_rank, seed=self.seed )
+    #         self.train_loader = SimCLRWrapper( transform=train )
+    #         self.val_loader = SimCLRWrapper( transform=val )
+    #
+    #     elif stage == Options.inference.name:
+    #         self.test_dataloader = SimCLRWrapper(
+    #             transform=self.transform( self.DATA_PATH, batch_size=self.batch_size, input_height=self.image_size,
+    #                                       copies=1, stage='inference', num_threads=2 * self.cpus,
+    #                                       device_id=self.local_rank, seed=self.seed ) )
+    #         self.inference_dataloader = self.test_dataloader
+
     def setup(self, stage='inference'):
         Options = Enum( 'Loader', 'fit test inference' )
         if stage == Options.fit.name:
-            train = self.transform( self.DATA_PATH, batch_size=self.batch_size, input_height=self.image_size, copies=3,
-                                    stage='train', num_threads=self.cpus, device_id=self.local_rank, seed=self.seed )
-            val = self.transform( self.VAL_PATH, batch_size=self.batch_size, input_height=self.image_size, copies=3,
-                                  stage='validation', num_threads=self.cpus, device_id=self.local_rank, seed=self.seed )
-            self.train_loader = SimCLRWrapper( transform=train )
-            self.val_loader = SimCLRWrapper( transform=val )
+            data = SIMCLRData( input_height=self.image_size, DATA_PATH=self.DATA_PATH, copies=3, stage='train' )
+
+            valid_size = 0.2
+
+            # Dividing the indices for train and cross validation
+            indices = list( range( len( data ) ) )
+            np.random.shuffle( indices )
+            split = int( np.floor( valid_size * len( data ) ) )
+
+            train_idx, valid_idx = indices[split:], indices[:split]
+
+            self.train_loader = DataLoader( data, batch_size=self.batch_size, sampler=SubsetRandomSampler( train_idx ) )
+            self.val_loader = DataLoader( data, batch_size=self.batch_size, sampler=SubsetRandomSampler( valid_idx ) )
 
         elif stage == Options.inference.name:
-            self.test_dataloader = SimCLRWrapper(
-                transform=self.transform( self.DATA_PATH, batch_size=self.batch_size, input_height=self.image_size,
-                                          copies=1, stage='inference', num_threads=2 * self.cpus,
-                                          device_id=self.local_rank, seed=self.seed ) )
+            data = SIMCLRData( input_height=self.image_size, DATA_PATH=self.DATA_PATH, copies=3, stage='inference' )
+            self.test_dataloader = DataLoader( data, batch_size=self.batch_size, shuffle=False )
             self.inference_dataloader = self.test_dataloader
 
     def train_dataloader(self):

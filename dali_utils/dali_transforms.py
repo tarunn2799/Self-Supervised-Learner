@@ -28,15 +28,15 @@ class SimCLRTransform( Pipeline ):
         self.blur_amt = ops.random.Uniform( values=[float( i ) for i in range( 1, int( 0.1 * self.input_height ), 2 )] )
 
         self.decode = ops.ImageDecoder( device='mixed', output_type=types.RGB )
-        # self.crop = ops.RandomResizedCrop( size=self.input_height, minibatch_size=batch_size, device="gpu",
-        #                                    dtype=types.FLOAT )
+        self.crop = ops.RandomResizedCrop( size=self.input_height, minibatch_size=batch_size, device="gpu",
+                                           dtype=types.FLOAT )
         # self.flip = ops.Flip( vertical=self.coin(), horizontal=self.coin(), device="gpu" )
         # self.colorjit_gray = ops.ColorTwist( brightness=self.uniform(), contrast=self.uniform(), hue=self.uniform(),
         #                                      saturation=self.uniform(), device="gpu" )
         # self.blur = ops.GaussianBlur( window_size=self.to_int32_cpu( self.blur_amt() ), device="gpu",
         #                               dtype=types.FLOAT )
         #
-        # self.swapaxes = ops.Transpose( perm=[2, 0, 1], device="gpu" )
+        self.swapaxes = ops.Transpose( perm=[2, 0, 1], device="gpu" )
         # self.brightness_contrast=ops.brightness_contrast(brightness=self.uniform(),
         #                                                  contrast=self.uniform(),contrast_center=self.uniform())
         # self.hue=ops.hue(hue=self.uniform())
@@ -61,10 +61,6 @@ class SimCLRTransform( Pipeline ):
             # ops.Hue( hue=self.uniform() ),
             # ops.Hsv( hue=self.uniform(), saturation=self.uniform(), value=self.uniform() )
         ]
-
-        # Todo: Increase the list of dali ops
-        #       See how to apply magnitude to each accordingly
-        #       Run and pray to god
 
     def rand_aug(self, img):
         ops = random.choices( self.augment_list, k=self.n )
