@@ -89,7 +89,7 @@ class SimCLRTransform( Pipeline ):
         jpegs = self.decode( jpegs )
         breakpoint()
         if self.stage == 'train':
-            self.transform = self.rand_aug  # Todo: concern
+            self.transform = self.train_transform
         else:
             self.transform = self.val_transform
 

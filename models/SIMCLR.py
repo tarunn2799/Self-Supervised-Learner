@@ -63,19 +63,23 @@ class SIMCLR( SimCLR ):
     def setup(self, stage='inference'):
         Options = Enum( 'Loader', 'fit test inference' )
         if stage == Options.fit.name:
-            data = SIMCLRData( input_height=self.image_size, DATA_PATH=self.DATA_PATH, copies=3, stage='train' )
+            train_data = SIMCLRData( input_height=self.image_size, DATA_PATH=self.DATA_PATH, copies=3, stage='train' )
+            val_data = SIMCLRData( input_height=self.image_size, DATA_PATH=self.DATA_PATH, copies=3,
+                                   stage='validation' )
 
             valid_size = 0.2
 
             # Dividing the indices for train and cross validation
-            indices = list( range( len( data ) ) )
+            indices = list( range( len( train_data ) ) )
             np.random.shuffle( indices )
-            split = int( np.floor( valid_size * len( data ) ) )
+            split = int( np.floor( valid_size * len( train_data ) ) )
 
             train_idx, valid_idx = indices[split:], indices[:split]
 
-            self.train_loader = DataLoader( data, batch_size=self.batch_size, sampler=SubsetRandomSampler( train_idx ) )
-            self.val_loader = DataLoader( data, batch_size=self.batch_size, sampler=SubsetRandomSampler( valid_idx ) )
+            self.train_loader = DataLoader( train_data, batch_size=self.batch_size,
+                                            sampler=SubsetRandomSampler( train_idx ) )
+            self.val_loader = DataLoader( val_data, batch_size=self.batch_size,
+                                          sampler=SubsetRandomSampler( valid_idx ) )
 
         elif stage == Options.inference.name:
             data = SIMCLRData( input_height=self.image_size, DATA_PATH=self.DATA_PATH, copies=3, stage='inference' )

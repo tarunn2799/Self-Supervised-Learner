@@ -5,8 +5,7 @@ from nvidia.dali.plugin.base_iterator import LastBatchPolicy
 from nvidia.dali.plugin.pytorch import DALIGenericIterator
 
 
-# class SimCLRWrapper( DALIGenericIterator ):
-class SimCLRWrapper():  # todo: here this must be converted to pytorch magic, Dont know how to overload DataLoader without understanding whats happening here
+class SimCLRWrapper( DALIGenericIterator ):
     def __init__(self, transform):
         image_ids = [f'im{i}' for i in range( transform.copies )]
         if transform.stage != 'inference':
@@ -14,7 +13,7 @@ class SimCLRWrapper():  # todo: here this must be converted to pytorch magic, Do
         super().__init__( transform, image_ids, last_batch_policy=LastBatchPolicy.PARTIAL )
 
         self.num_samples = transform.num_samples
-        self.next_fn = self.get_next( transform.stage != 'inference' )
+        self.next_fn = self.get_next( transform.stage != 'inference' )  #
 
     def get_next(self, with_label):
         def include_label(self):
