@@ -1,5 +1,3 @@
-import random
-
 import nvidia.dali.ops as ops
 import nvidia.dali.types as types
 from nvidia.dali.pipeline import Pipeline
@@ -13,8 +11,6 @@ class SimCLRTransform( Pipeline ):
         # this lets our pytorch compat function find the length of our dataset
         self.num_samples = len( ImageFolder( DATA_PATH ) )
 
-        self.m = random.randint( 1, 2 )
-        self.n = random.randint( 1, 4 )
         self.copies = copies
         self.input_height = input_height
         self.stage = stage
@@ -30,47 +26,15 @@ class SimCLRTransform( Pipeline ):
         self.decode = ops.ImageDecoder( device='mixed', output_type=types.RGB )
         self.crop = ops.RandomResizedCrop( size=self.input_height, minibatch_size=batch_size, device="gpu",
                                            dtype=types.FLOAT )
-        # self.flip = ops.Flip( vertical=self.coin(), horizontal=self.coin(), device="gpu" )
-        # self.colorjit_gray = ops.ColorTwist( brightness=self.uniform(), contrast=self.uniform(), hue=self.uniform(),
-        #                                      saturation=self.uniform(), device="gpu" )
-        # self.blur = ops.GaussianBlur( window_size=self.to_int32_cpu( self.blur_amt() ), device="gpu",
-        #                               dtype=types.FLOAT )
-        #
+        self.flip = ops.Flip( vertical=self.coin(), horizontal=self.coin(), device="gpu" )
+        self.colorjit_gray = ops.ColorTwist( brightness=self.uniform(), contrast=self.uniform(), hue=self.uniform(),
+                                             saturation=self.uniform(), device="gpu" )
+        self.blur = ops.GaussianBlur( window_size=self.to_int32_cpu( self.blur_amt() ), device="gpu",
+                                      dtype=types.FLOAT )
         self.swapaxes = ops.Transpose( perm=[2, 0, 1], device="gpu" )
-        # self.brightness_contrast=ops.brightness_contrast(brightness=self.uniform(),
-        #                                                  contrast=self.uniform(),contrast_center=self.uniform())
-        # self.hue=ops.hue(hue=self.uniform())
-        # self.hsv=ops.hsv(hue=self.uniform(),saturation=self.uniform(),value=self.uniform())
-        # self.water=ops.water(ampl_x=self.uniform,ampl_y=self.uniform,fill_value=self.uniform,
-        #                      freq_X=self.uniform(),freq_y=self.uniform())
-        # self.transforms_shear=ops.transforms.shear(angles=[self.uniform(),self.uniform()])
-        self.augment_list = [
-            ops.RandomResizedCrop( size=self.input_height, minibatch_size=batch_size, device="gpu",  # magnitude
-                                   dtype=types.FLOAT ),
-            ops.Flip( vertical=self.coin(), horizontal=self.coin(), device="gpu" ),
-            ops.ColorTwist( brightness=self.uniform(), contrast=self.uniform(), hue=self.uniform(),
-                            saturation=self.uniform(), device="gpu" ),
-            ops.GaussianBlur( window_size=self.to_int32_cpu( self.blur_amt() ), device="gpu", dtype=types.FLOAT ),
-            ops.Transpose( perm=[2, 0, 1], device="gpu" ),
-            ops.BrightnessContrast( brightness=self.uniform(),
-                                    contrast=self.uniform() )
-            # ,  # removed constrast_centre param
-            # ops.Water( ampl_x=self.uniform, ampl_y=self.uniform, fill_value=self.uniform ),
-            # # freq_X=self.uniform(), freq_y=self.uniform()
-            # ops.transforms.Shear( angles=[self.uniform(), self.uniform()] ),
-            # ops.Hue( hue=self.uniform() ),
-            # ops.Hsv( hue=self.uniform(), saturation=self.uniform(), value=self.uniform() )
-        ]
-
-    def rand_aug(self, img):
-        ops = random.choices( self.augment_list, k=self.n )
-        breakpoint()
-        for op in ops:
-            img = op( img )
-            breakpoint()
-        return img
 
     def train_transform(self, image):
+
         image = self.crop( image )
         image = self.flip( image )
         image = self.colorjit_gray( image )
@@ -84,21 +48,20 @@ class SimCLRTransform( Pipeline ):
         return image
 
     def define_graph(self):
-        breakpoint()
         jpegs, label = self.input()
         jpegs = self.decode( jpegs )
-        breakpoint()
+
         if self.stage == 'train':
             self.transform = self.train_transform
         else:
             self.transform = self.val_transform
 
         batch = ()
-        for i in range(self.copies):
-            batch += (self.transform(jpegs), )
-            breakpoint()
+        for i in range( self.copies ):
+            batch += (self.transform( jpegs ),)
+
         if self.stage is not 'inference':
             label = label.gpu()
-            label = self.to_int64(label)
-            batch += (label, )
+            label = self.to_int64( label )
+            batch += (label,)
         return batch
