@@ -12,8 +12,6 @@ class SIMCLRData( Dataset ):
     def __init__(self, DATA_PATH, input_height, copies, stage):
         super().__init__()
         self.image_ids = [f'im{i}' for i in range( copies )]
-        if stage != 'inference':
-            self.image_ids.append( 'label' )
 
         self.m = random.randint( 1, 2 )
         self.n = random.randint( 1, 4 )
@@ -35,17 +33,13 @@ class SIMCLRData( Dataset ):
         return image
 
     def __getitem__(self, index):
-        returnable = dict()
         sample, label = self.input[index]
         if self.stage == 'train':
             self.transform = self.randaug
         else:
             self.transform = self.val_transform
 
-        for i, key in enumerate( self.image_ids ):
-
-            if key == 'label':
-                returnable['label'] = label
-            else:
-                returnable[key] = transforms.ToTensor()( self.transform( sample ) )
-        return returnable
+        if self.stage != 'inference':
+            return tuple( [transforms.ToTensor()( self.transform( sample ) ) for _ in self.image_ids] ), label
+        else:
+            return tuple( [transforms.ToTensor()( self.transform( sample ) ) for _ in self.image_ids] )
