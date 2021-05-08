@@ -37,11 +37,8 @@ class SIMCLRData( Dataset ):
     def __len__(self):
         return self.num_samples
 
-    def val_transform(self, image):  ## must rewrite these below functions into pytorch transforms functions
-        image = self.crop()
-        # self.swapaxes = ops.Transpose( perm=[2, 0, 1], device="gpu" )
-        #     No need to transpose cos pytorch is automatically like that
-        # image = self.swapaxes( image )
+    def val_transform(self, image):
+        image = self.crop( image )
         return image
 
     def __getitem__(self, index):
