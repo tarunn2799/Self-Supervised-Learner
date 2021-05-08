@@ -54,5 +54,5 @@ class SIMCLRData( Dataset ):
                 returnable['label'] = torch.tensor( self.label_transform[label] )
             else:
                 returnable[key] = torch.tensor( self.transform( sample ) )
-
+        breakpoint()
         return returnable
