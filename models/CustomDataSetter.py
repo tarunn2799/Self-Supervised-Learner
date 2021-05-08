@@ -1,7 +1,6 @@
 import random
 
-import torch
-from sklearn import preprocessing
+import torchvision.transforms as transforms
 from torch.utils.data import Dataset
 from torchvision.datasets import ImageFolder
 from torchvision.transforms import RandomResizedCrop
@@ -24,12 +23,6 @@ class SIMCLRData( Dataset ):
         self.input_height = input_height
         self.stage = stage
         self.input = ImageFolder( DATA_PATH )
-        self.label_transform = dict()
-
-        le = preprocessing.LabelEncoder().fit( self.input.targets )
-
-        for key in self.input.targets:  # For mapping labels to integer values
-            self.label_transform[key] = le.transform( key )
 
         self.randaug = RandAugment( self.n, self.m )
         self.crop = RandomResizedCrop( input_height )
@@ -50,9 +43,9 @@ class SIMCLRData( Dataset ):
             self.transform = self.val_transform
 
         for i, key in enumerate( self.image_ids ):
+
             if key == 'label':
-                returnable['label'] = torch.tensor( self.label_transform[label] )
+                returnable['label'] = label
             else:
-                returnable[key] = torch.tensor( self.transform( sample ) )
-        breakpoint()
+                returnable[key] = transforms.ToTensor()( self.transform( sample ) )
         return returnable

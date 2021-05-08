@@ -89,10 +89,10 @@ class SIMCLR( SimCLR ):
             breakpoint()
 
     def train_dataloader(self):
-        return self.train_loader
+        return iter( self.train_loader )
 
     def val_dataloader(self):
-        return self.val_loader
+        return iter( self.val_loader )
 
     # give user permission to add extra arguments for SIMCLR model particularly
     def add_model_specific_args(parent_parser):
