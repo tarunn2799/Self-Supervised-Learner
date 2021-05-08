@@ -256,10 +256,11 @@ class CutoutDefault( object ):
 
 
 class RandAugment:
-    def __init__(self, n, m):
+    def __init__(self, n, m, input_height):
         self.n = n
         self.m = m  # [0, 30]
         self.augment_list = augment_list()
+        self.height = input_height
 
     def __call__(self, img):
         ops = random.choices( self.augment_list, k=self.n )
@@ -267,4 +268,4 @@ class RandAugment:
             val = (float( self.m ) / 30) * float( maxval - minval ) + minval
             img = op( img, val )
 
-        return img
+        return img.resize( (self.height, self.height) )

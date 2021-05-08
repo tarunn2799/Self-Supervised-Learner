@@ -22,7 +22,7 @@ class SIMCLRData( Dataset ):
         self.stage = stage
         self.input = ImageFolder( DATA_PATH )
 
-        self.randaug = RandAugment( self.n, self.m )
+        self.randaug = RandAugment( self.n, self.m, input_height )
         self.crop = RandomResizedCrop( input_height )
 
     def __len__(self):
