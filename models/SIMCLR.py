@@ -8,7 +8,6 @@ from torch.utils.data import DataLoader, SubsetRandomSampler
 from torchvision.datasets import ImageFolder
 
 # Internal Imports
-from dali_utils.dali_transforms import SimCLRTransform
 from models.CustomDataSetter import SIMCLRData
 
 
