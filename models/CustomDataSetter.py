@@ -14,7 +14,7 @@ class SIMCLRData( Dataset ):
         self.image_ids = [f'im{i}' for i in range( copies )]
 
         self.m = random.randint( 1, 2 )
-        self.n = random.randint( 1, 4 )
+        self.n = random.randint( 0, 30 )
         self.num_samples = len( ImageFolder( DATA_PATH ) )
 
         self.copies = copies
