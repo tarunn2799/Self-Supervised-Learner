@@ -43,24 +43,6 @@ class SIMCLR( SimCLR ):
     def init_model(self):
         return None
 
-    # def setup(self, stage='inference'):
-    #     Options = Enum( 'Loader', 'fit test inference' )
-    #     if stage == Options.fit.name:
-    #         train = self.transform( self.DATA_PATH, batch_size=self.batch_size, input_height=self.image_size, copies=3,
-    #                                 stage='train', num_threads=self.cpus, device_id=self.local_rank, seed=self.seed )
-    #         val = self.transform( self.VAL_PATH, batch_size=self.batch_size, input_height=self.image_size, copies=3,
-    #                               stage='validation', num_threads=self.cpus, device_id=self.local_rank, seed=self.seed )
-    #         self.train_loader = SimCLRWrapper( transform=train )
-    #         self.val_loader = SimCLRWrapper( transform=val )
-    #         breakpoint()
-    #     elif stage == Options.inference.name:
-    #         self.test_dataloader = SimCLRWrapper(
-    #             transform=self.transform( self.DATA_PATH, batch_size=self.batch_size, input_height=self.image_size,
-    #                                       copies=1, stage='inference', num_threads=2 * self.cpus,
-    #                                       device_id=self.local_rank, seed=self.seed ) )
-    #         self.inference_dataloader = self.test_dataloader
-    #         breakpoint()
-
     def setup(self, stage='inference'):
         Options = Enum( 'Loader', 'fit test inference' )
         if stage == Options.fit.name:
@@ -81,18 +63,17 @@ class SIMCLR( SimCLR ):
                                             sampler=SubsetRandomSampler( train_idx ) )
             self.val_loader = DataLoader( val_data, batch_size=self.batch_size,
                                           sampler=SubsetRandomSampler( valid_idx ) )
-            breakpoint()
+
         elif stage == Options.inference.name:
             data = SIMCLRData( input_height=self.image_size, DATA_PATH=self.DATA_PATH, copies=3, stage='inference' )
             self.test_dataloader = DataLoader( data, batch_size=self.batch_size, shuffle=False )
             self.inference_dataloader = self.test_dataloader
-            breakpoint()
 
     def train_dataloader(self):
-        return iter( self.train_loader )
+        return self.train_loader
 
     def val_dataloader(self):
-        return iter( self.val_loader )
+        return self.val_loader
 
     # give user permission to add extra arguments for SIMCLR model particularly
     def add_model_specific_args(parent_parser):
