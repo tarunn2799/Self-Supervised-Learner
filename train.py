@@ -13,13 +13,11 @@ from termcolor import colored
 from torchvision.datasets import ImageFolder
 
 # Internal Package Imports
-from models import SIMCLR, SIMSIAM, CLASSIFIER, encoders
+from models import SIMCLR, encoders
 
 # Dictionary of supported Techniques
 supported_techniques = {
-    'SIMCLR': SIMCLR.SIMCLR,
-    'SIMSIAM': SIMSIAM.SIMSIAM,
-    'CLASSIFIER': CLASSIFIER.CLASSIFIER,
+    'SIMCLR': SIMCLR.SIMCLR
 }
 
 
