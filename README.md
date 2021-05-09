@@ -137,9 +137,8 @@ Both self-supervised models and finetuned models can be accessed and used normal
 
 For example:
 ```python
-from models import SIMCLR, CLASSIFIER
+from models import SIMCLR
 simclr_model = SIMCLR.SIMCLR.load_from_checkpoint('/content/models/SIMCLR_ssl.ckpt') #Used like a normal pytorch model
-classifier_model = CLASSIFIER.CLASSIFIER.load_from_checkpoint('/content/models/CLASSIFIER_ft.ckpt') #Used like a normal pytorch model
 ```
 
 ## Using Your Own Encoder

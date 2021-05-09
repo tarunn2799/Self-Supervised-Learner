@@ -13,8 +13,7 @@ from models.CustomDataSetter import SIMCLRData
 
 class SIMCLR( SimCLR ):
 
-    def __init__(self, encoder, DATA_PATH, VAL_PATH, hidden_dim, image_size, seed, cpus, transform=None,
-                 **simclr_hparams):
+    def __init__(self, encoder, DATA_PATH, VAL_PATH, hidden_dim, image_size, seed, cpus, **simclr_hparams):
 
         data_temp = ImageFolder( DATA_PATH )
 
