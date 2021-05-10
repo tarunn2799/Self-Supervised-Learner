@@ -13,7 +13,7 @@ from termcolor import colored
 from torchvision.datasets import ImageFolder
 
 # Internal Package Imports
-from models import SIMCLR, encoders, CLASSIFIER
+from models import SIMCLR, resnets, CLASSIFIER
 
 # Dictionary of supported Techniques
 supported_techniques = {
@@ -39,33 +39,37 @@ def load_model(args):
             return technique.load_from_checkpoint(**args.__dict__)
         except: 
             print('Trying to return model encoder only...')
-   
-            #there may be a more efficient way to find right technique to load
-            for previous_technique in supported_techniques.values():  
+
+            # there may be a more efficient way to find right technique to load
+            for previous_technique in supported_techniques.values():
                 try:
-                    args.encoder = previous_technique.load_from_checkpoint(**args.__dict__).encoder
-                    print(colored(f'Successfully found previous model {previous_technique}', 'blue'))
+                    args.encoder = previous_technique.load_from_checkpoint( **args.__dict__ ).encoder
+                    print( colored( f'Successfully found previous model {previous_technique}', 'blue' ) )
                     break
                 except:
                     continue
-    
-    #encoder specified
-    elif 'minicnn' in args.model:
-        #special case to make minicnn output variable output embedding size depending on user arg
-        output_size =  int(''.join(x for x in args.model if x.isdigit()))
-        args.encoder = encoders.miniCNN(output_size)
-        args.encoder.embedding_size = output_size  
+
+    # encoder specified
+    # elif 'minicnn' in args.model:
+    #     #special case to make minicnn output variable output embedding size depending on user arg
+    #     output_size =  int(''.join(x for x in args.model if x.isdigit()))
+    #     args.encoder = resnets.miniCNN(output_size)
+    #     args.encoder.embedding_size = output_size
     elif args.model == model_options.resnet18.name:
-        args.encoder = encoders.resnet18(pretrained=False, first_conv=True, maxpool1=True, return_all_feature_maps=False)
+        args.encoder = resnets.resnet18( pretrained=False, first_conv=True, maxpool1=True,
+                                         return_all_feature_maps=False )
         args.encoder.embedding_size = 512
     elif args.model == model_options.imagenet_resnet18.name:
-        args.encoder = encoders.resnet18(pretrained=True, first_conv=True, maxpool1=True, return_all_feature_maps=False)
+        args.encoder = resnets.resnet18( pretrained=True, first_conv=True, maxpool1=True,
+                                         return_all_feature_maps=False )
         args.encoder.embedding_size = 512
     elif args.model == model_options.resnet50.name:
-        args.encoder = encoders.resnet50(pretrained=False, first_conv=True, maxpool1=True, return_all_feature_maps=False)
+        args.encoder = resnets.resnet50( pretrained=False, first_conv=True, maxpool1=True,
+                                         return_all_feature_maps=False )
         args.encoder.embedding_size = 2048
     elif args.model == model_options.imagenet_resnet50.name:
-        args.encoder = encoders.resnet50(pretrained=True, first_conv=True, maxpool1=True, return_all_feature_maps=False)
+        args.encoder = resnets.resnet50( pretrained=True, first_conv=True, maxpool1=True,
+                                         return_all_feature_maps=False )
         args.encoder.embedding_size = 2048
 
     #try loading just the encoder
@@ -76,7 +80,7 @@ def load_model(args):
         except:
           raise Exception('Encoder could not be loaded from path')
         try:
-          embedding_size = encoder.embedding_size
+            embedding_size = resnets.embedding_size
         except:
           raise Exception('Your model specified needs to tell me its embedding size. I cannot infer output size yet. Do this by specifying a model.embedding_size in your model instance')
     
