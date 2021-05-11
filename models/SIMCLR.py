@@ -47,7 +47,7 @@ class SIMCLR( SimCLR ):
             val_data = SIMCLRData( input_height=self.image_size, DATA_PATH=self.DATA_PATH, copies=3,
                                    stage='validation' )
 
-            valid_size = 0.2
+            valid_size = 0.1
 
             # Dividing the indices for train and cross validation
             indices = list( range( len( train_data ) ) )
