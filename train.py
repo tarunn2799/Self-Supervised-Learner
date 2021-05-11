@@ -13,7 +13,7 @@ from termcolor import colored
 from torchvision.datasets import ImageFolder
 
 # Internal Package Imports
-from models import SIMCLR, resnets, CLASSIFIER
+from models import SIMCLR, resnets, CLASSIFIER, encoders
 
 # Dictionary of supported Techniques
 supported_techniques = {
@@ -50,11 +50,11 @@ def load_model(args):
                     continue
 
     # encoder specified
-    # elif 'minicnn' in args.model:
-    #     #special case to make minicnn output variable output embedding size depending on user arg
-    #     output_size =  int(''.join(x for x in args.model if x.isdigit()))
-    #     args.encoder = resnets.miniCNN(output_size)
-    #     args.encoder.embedding_size = output_size
+    elif 'minicnn' in args.model:
+        # special case to make minicnn output variable output embedding size depending on user arg
+        output_size = int( ''.join( x for x in args.model if x.isdigit() ) )
+        args.encoder = encoders.miniCNN( output_size )
+        args.encoder.embedding_size = output_size
     elif args.model == model_options.resnet18.name:
         args.encoder = resnets.resnet18( pretrained=False, first_conv=True, maxpool1=True,
                                          return_all_feature_maps=False )
