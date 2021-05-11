@@ -4,7 +4,7 @@ from enum import Enum
 import numpy as np
 from pl_bolts.models.self_supervised import SimCLR
 from pl_bolts.models.self_supervised.simclr.simclr_module import Projection
-from torch.utils.data import DataLoader, SubsetRandomSampler
+from torch.utils.data import DataLoader
 from torchvision.datasets import ImageFolder
 
 # Internal Imports
@@ -56,10 +56,8 @@ class SIMCLR( SimCLR ):
 
             train_idx, valid_idx = indices[split:], indices[:split]
 
-            self.train_loader = DataLoader( train_data, batch_size=self.batch_size,
-                                            sampler=SubsetRandomSampler( train_idx ) )
-            self.val_loader = DataLoader( val_data, batch_size=self.batch_size,
-                                          sampler=SubsetRandomSampler( valid_idx ) )
+            self.train_loader = DataLoader(train_data, batch_size=self.batch_size)
+            self.val_loader = DataLoader(val_data, batch_size=self.batch_size)
 
         elif stage == Options.inference.name:
             data = SIMCLRData( input_height=self.image_size, DATA_PATH=self.DATA_PATH, copies=3, stage='inference' )
