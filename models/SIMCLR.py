@@ -30,7 +30,7 @@ class SIMCLR( SimCLR ):
         self.seed = seed
 
         super().__init__( **simclr_hparams )
-        global_batch_size = self.num_nodes * self.batch_size if simclr_hparams['num_gpus'] > 0 else self.batch_size          
+        global_batch_size = self.num_nodes * self.batch_size if simclr_hparams['gpus'] > 0 else self.batch_size          
         self.train_iters_per_epoch = self.train_loader.num_samples // global_batch_size
         self.encoder = encoder
 
