@@ -1,6 +1,7 @@
 from argparse import ArgumentParser
 from enum import Enum
 
+import imutils.paths as paths
 import numpy as np
 from pl_bolts.models.self_supervised import SimCLR
 from pl_bolts.models.self_supervised.simclr.simclr_module import Projection
@@ -30,8 +31,9 @@ class SIMCLR( SimCLR ):
         self.seed = seed
 
         super().__init__( **simclr_hparams )
-        global_batch_size = self.num_nodes * self.batch_size if simclr_hparams['gpus'] > 0 else self.batch_size          
-        self.train_iters_per_epoch = self.train_loader.num_samples // global_batch_size
+        global_batch_size = self.num_nodes * self.batch_size if simclr_hparams['gpus'] > 0 else self.batch_size
+        num_samples = len( list( paths.list_images( self.DATA_PATH ) ) )
+        self.train_iters_per_epoch = num_samples // global_batch_size
         self.encoder = encoder
 
         self.projection = Projection( input_dim=self.encoder.embedding_size, hidden_dim=self.hidden_dim )
@@ -46,7 +48,7 @@ class SIMCLR( SimCLR ):
         Options = Enum( 'Loader', 'fit test inference' )
         if stage == Options.fit.name:
             train_data = SIMCLRData( input_height=self.image_size, DATA_PATH=self.DATA_PATH, copies=3, stage='train' )
-            val_data = SIMCLRData( input_height=self.image_size, DATA_PATH=self.DATA_PATH, copies=3,
+            val_data = SIMCLRData( input_height=self.image_size, DATA_PATH=self.VAL_PATH, copies=3,
                                    stage='validation' )
 
             valid_size = 0.1
