@@ -2,7 +2,6 @@ from argparse import ArgumentParser
 from enum import Enum
 
 import imutils.paths as paths
-import numpy as np
 from pl_bolts.models.self_supervised import SimCLR
 from pl_bolts.models.self_supervised.simclr.simclr_module import Projection
 from torch.utils.data import DataLoader
@@ -51,21 +50,12 @@ class SIMCLR( SimCLR ):
             val_data = SIMCLRData( input_height=self.image_size, DATA_PATH=self.VAL_PATH, copies=3,
                                    stage='validation' )
 
-            valid_size = 0.1
-
-            # Dividing the indices for train and cross validation
-            indices = list( range( len( train_data ) ) )
-            np.random.shuffle( indices )
-            split = int( np.floor( valid_size * len( train_data ) ) )
-
-            train_idx, valid_idx = indices[split:], indices[:split]
-
             self.train_loader = DataLoader( train_data, batch_size=self.batch_size, num_workers=self.cpus )
             self.val_loader = DataLoader( val_data, batch_size=self.batch_size, num_workers=self.cpus )
 
         elif stage == Options.inference.name:
             data = SIMCLRData( input_height=self.image_size, DATA_PATH=self.DATA_PATH, copies=3, stage='inference' )
-            self.test_dataloader = DataLoader( data, batch_size=self.batch_size, shuffle=False )
+            self.test_dataloader = DataLoader( data, batch_size=self.batch_size, num_workers=self.cpus )
             self.inference_dataloader = self.test_dataloader
 
     def train_dataloader(self):
