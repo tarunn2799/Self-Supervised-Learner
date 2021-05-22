@@ -60,8 +60,8 @@ class SIMCLR( SimCLR ):
 
             train_idx, valid_idx = indices[split:], indices[:split]
 
-            self.train_loader = DataLoader(train_data, batch_size=self.batch_size)
-            self.val_loader = DataLoader(val_data, batch_size=self.batch_size)
+            self.train_loader = DataLoader( train_data, batch_size=self.batch_size, num_workers=self.cpus )
+            self.val_loader = DataLoader( val_data, batch_size=self.batch_size, num_workers=self.cpus )
 
         elif stage == Options.inference.name:
             data = SIMCLRData( input_height=self.image_size, DATA_PATH=self.DATA_PATH, copies=3, stage='inference' )
