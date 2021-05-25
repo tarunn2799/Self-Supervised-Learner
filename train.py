@@ -56,7 +56,7 @@ def load_model(args):
         args.encoder = encoders.miniCNN( output_size )
         args.encoder.embedding_size = output_size
     elif args.model == model_options.resnet18.name:
-        args.encoder = resnets.resnet18( pretrained=False, first_conv=True, maxpool1=True,
+        args.encoder = resnets.resnet18( pretrained=False, first_conv=False, maxpool1=True,
                                          return_all_feature_maps=False )
         args.encoder.embedding_size = 512
     elif args.model == model_options.imagenet_resnet18.name:
