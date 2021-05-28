@@ -120,7 +120,7 @@ def cli_main():
     wandb_logger = None
     log_name = args.technique + '_' + args.log_name + '.ckpt'
     if log_name is not None:
-        wandb_logger = WandbLogger(name=log_name,project='Curator')
+        wandb_logger = WandbLogger(name=log_name,project='Curator', log_model = True)
     
     #resize images here
     if args.resize:

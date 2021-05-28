@@ -6,7 +6,7 @@ from pl_bolts.models.self_supervised import SimCLR
 from pl_bolts.models.self_supervised.simclr.simclr_module import Projection
 from torch.utils.data import DataLoader
 from torchvision.datasets import ImageFolder
-
+import math 
 # Internal Imports
 from models.CustomDataSetter import SIMCLRData
 
@@ -32,7 +32,7 @@ class SIMCLR( SimCLR ):
         super().__init__( **simclr_hparams )
         global_batch_size = self.num_nodes * self.batch_size if simclr_hparams['gpus'] > 0 else self.batch_size
         num_samples = len( list( paths.list_images( self.DATA_PATH ) ) )
-        self.train_iters_per_epoch = num_samples // global_batch_size
+        self.train_iters_per_epoch = math.ceil(num_samples / global_batch_size)
         self.encoder = encoder
 
         self.projection = Projection( input_dim=self.encoder.embedding_size, hidden_dim=self.hidden_dim )
